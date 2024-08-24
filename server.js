@@ -1,23 +1,30 @@
+require("dotenv").config();
 const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
 const app = express();
 
-require("dotenv").config();
-const PORT = process.env.PORT || 4000;
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
 
-app.use(express.json());
-require("./config/database").connect();
-
-const user = require("./routes/user");
-app.use("/api/v1", user);
-
-app
-  .listen(PORT, (err) => {
-    if (err) {
-      console.error(`Failed to start server: ${err.message}`);
-      process.exit(1);
-    }
-    console.log(`Server is running on port ${PORT}`);
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGO_URI, {
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true,
   })
-  .on("error", (err) => {
-    console.error(`Server error: ${err.message}`);
-  });
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error(err));
+
+// Routes
+const registerRoute = require("./routes/register");
+const loginRoute = require("./routes/login");
+app.use("/api", registerRoute);
+app.use("/api", loginRoute);
+
+// Start the server
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
