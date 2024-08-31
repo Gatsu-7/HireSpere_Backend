@@ -84,15 +84,13 @@ const mongoose = require("mongoose");
 const { PassThrough } = require("stream");
 
 // Load Google Service Account credentials from environment variable
-const KEYFILEPATH = process.env.GOOGLE_SERVICE_ACCOUNT_KEYFILE_PATH;
-console.log("Key file path:", KEYFILEPATH);
-const SCOPES = process.env.GOOGLE_DRIVE_SCOPES
-  ? process.env.GOOGLE_DRIVE_SCOPES.split(",")
-  : ["https://www.googleapis.com/auth/drive.file"];
+const credentialsJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+const credentials = JSON.parse(credentialsJson);
 
+// Configure Google Auth
 const auth = new google.auth.GoogleAuth({
-  keyFile: KEYFILEPATH,
-  scopes: SCOPES,
+  credentials: credentials,
+  scopes: ["https://www.googleapis.com/auth/drive.file"],
 });
 
 const drive = google.drive({ version: "v3", auth });
