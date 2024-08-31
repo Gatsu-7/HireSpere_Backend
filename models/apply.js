@@ -84,15 +84,17 @@ const mongoose = require("mongoose");
 const { PassThrough } = require("stream");
 
 // Load Google Service Account credentials from environment variable
-const credentialsJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-const credentials = JSON.parse(credentialsJson);
+const { OAuth2Client } = require("google-auth-library");
+const privateKey = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n");
 
-// Configure Google Auth
-const auth = new google.auth.GoogleAuth({
-  credentials: credentials,
-  scopes: [process.env.GOOGLE_DRIVE_SCOPES],
+const client = new OAuth2Client({
+  credentials: {
+    private_key: privateKey,
+    client_email: process.env.GOOGLE_CLIENT_EMAIL,
+  },
+  // Add the required scopes here
+  scopes: ["https://www.googleapis.com/auth/drive.file"],
 });
-
 const drive = google.drive({ version: "v3", auth });
 
 // Set up multer to handle file uploads in memory
