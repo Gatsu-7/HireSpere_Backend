@@ -90,7 +90,7 @@ const credentials = JSON.parse(credentialsJson);
 // Configure Google Auth
 const auth = new google.auth.GoogleAuth({
   credentials: credentials,
-  scopes: ["https://www.googleapis.com/auth/drive.file"],
+  scopes: [process.env.GOOGLE_DRIVE_SCOPES],
 });
 
 const drive = google.drive({ version: "v3", auth });
